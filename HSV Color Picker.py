@@ -12,6 +12,7 @@ ftypes = [
 ]
 
 
+
 def pick_color(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         pixel = image_hsv[y, x]
@@ -32,19 +33,34 @@ def main(src=None):
 
     if src:
         image_src = cv2.imread(src)
+        cv2.imshow("BGR", image_src)
+
+        # CREATE THE HSV FROM THE BGR IMAGE
+        image_hsv = cv2.cvtColor(image_src, cv2.COLOR_BGR2HSV)
+        cv2.imshow("HSV", image_hsv)
+
+        # CALLBACK FUNCTION
+        cv2.setMouseCallback("HSV", pick_color)
+
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
     else:
-        image_src = cv2.imread('./orange.png')
-    cv2.imshow("BGR", image_src)
+        video_capture = cv2.VideoCapture(0)
+        while True:
+            ret, image_src = video_capture.read()
+            cv2.imshow("BGR", image_src)
 
-    # CREATE THE HSV FROM THE BGR IMAGE
-    image_hsv = cv2.cvtColor(image_src, cv2.COLOR_BGR2HSV)
-    cv2.imshow("HSV", image_hsv)
+            # CREATE THE HSV FROM THE BGR IMAGE
+            image_hsv = cv2.cvtColor(image_src, cv2.COLOR_BGR2HSV)
+            cv2.imshow("HSV", image_hsv)
 
-    # CALLBACK FUNCTION
-    cv2.setMouseCallback("HSV", pick_color)
+            # CALLBACK FUNCTION
+            cv2.setMouseCallback("HSV", pick_color)
 
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+        video_capture.release()
+        cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
